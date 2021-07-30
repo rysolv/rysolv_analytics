@@ -1,3 +1,5 @@
-import { nuke } from './nuke';
+import { analyzeRepo } from './analyzeRepo';
+import { analyzeUser } from './analyzeUser';
+import { clean } from './clean';
 
-export { nuke };
+export { clean, analyzeRepo, analyzeUser };

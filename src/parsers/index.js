@@ -1,4 +1,4 @@
-import { parse_git_log } from './parse_git_log';
-import { parse_git_commit } from './parse_git_commit';
+import { parseGitLog } from './parseGitLog';
+import { parseGitCommit } from './parseGitCommit';
 
-export { parse_git_log, parse_git_commit };
+export { parseGitLog, parseGitCommit };
