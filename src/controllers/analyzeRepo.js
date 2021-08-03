@@ -1,93 +1,51 @@
-import { exec, listFiles } from '../helpers';
-import { parseGitLog, parseGitCommit } from '../parsers';
+import { fetchRepo, parseGitLog, parseGitCommit } from '../parsers';
+import { uploadRepo } from '../db';
 
 /**
- * @analyzeRepo
- * - Pull down targer repo
- * - Pull git log
- * - Parse each commit in git log
- * 
- * Example return: 
+ * Takes @repo (ex: rysolv/rysolv, tylermaran/izac) and returns:
  * [{
-		commit: 'a8890f6e17871dda1896c919d6f46be23ee1a93c',
-		author: 'Anna Pojawis <annapojawis@gmail.com>',
-		date: 'Sat Jul 24 16:01:29 2021 -0400',
-		message: 'Create CompanyRecruitment container and adjust styling on the CompanyRecruitment component',
-		filesChanged: [
+		committerName: 'Anna Pojawis',
+		committerEmail: 'annapojawis@gmail.com',
+		authorName: 'Anna Pojawis',
+		authorEmail: 'annapojawis@gmail.com',
+		commitHash: '6b8bf7d06d1358bcad252b987c418b2a71a764b0',
+		date: '2021-07-25T15:38:22-04:00',
+		subject: 'Make CompanyRecruitment mobile friendly',
+		body: '',
+		signer: '',
+		signerKey: '',
+		files: [
 			{
-				additions: '9',
-				deletions: '9',
-				filename: 'app/components/CompanyRecruitment/styledComponents.js'
+			additions: '1',
+			deletions: '1',
+			filename: 'app/components/CompanyRecruitment/index.jsx'
 			},
 		]
 	},]
 */
 
 export async function analyzeRepo({ repo }) {
-	/**
-	 * change up the logic here
-	 * Move the exec calls out of this function and into the helpers.
-	 * The parsers won't be pure parsers anymore. Sine they are dependent on the format.
-	 * So makes sense to group them with the exec call
-	 * Make fetch repo a helper
-	 *
-	 * fetch repo
-	 * parse git log
-	 * parse git commits
-	 * return data
-	 */
-
 	const repoName = repo.split('/')[1];
 
-	if (!listFiles({ dir: '/git' }).includes(repoName)) {
-		console.log(`Fetching ${repo}...`);
-		await exec({
-			cmd: `git clone https://github.com/${repo}.git`,
-			dir: '/git',
-		});
-	} else {
-		console.log('Pulling latest changes');
-		await exec({
-			cmd: `git pull`,
-			dir: `/git/${repoName}`,
-		});
-	}
+	// Clone repo || pull down changes
+	await fetchRepo({ repo });
 
 	// Fetch Git Log from repo and parse into array
 	const commitArray = await parseGitLog(repoName);
-
-	console.log(commitArray);
 	console.log(`Reviewing ${commitArray.length} commits in ${repo}`);
 
-	// const gitHistory = await Promise.all(
-	// 	logArray.map(async (el) => {
-	// 		const raw = await exec({
-	// 			cmd: `git show ${el.commit} --numstat`,
-	// 			dir: `/git/${repoName}`,
-	// 		});
-	// 		try {
-	// 			const commits = parseGitCommit({ raw, commit: el });
-	// 			// If condition to catch failing commits
-	// 			// Part of the multi-line commit error
-	// 			if (commits) {
-	// 				return { ...el, filesChanged: commits };
-	// 			}
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	})
-	// );
+	// Fetch file change data from each commit
+	const gitHistory = await Promise.all(
+		commitArray.map(async (el) => {
+			return {
+				...el,
+				files: await parseGitCommit({ hash: el.commitHash, repoName }),
+			};
+		})
+	);
 
-	// // Bad code. Shouldn't need this filer
-	// // But needed to move past this issue
-	// const newHistory = gitHistory.filter((el) => el != undefined);
-
-	// console.log(`Reviewed ${newHistory.length} commits. `);
-	// if (newHistory.length < logArray.length) {
-	// 	console.log(
-	// 		`${logArray.length - newHistory.length} lost in translation`
-	// 	);
-	// }
-	// console.log(newHistory);
-	// return newHistory;
+	for (const commit of gitHistory) {
+		await uploadRepo({ gitHistory: commit, repo });
+	}
+	return gitHistory;
 }

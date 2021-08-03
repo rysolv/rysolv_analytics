@@ -1,22 +1,27 @@
-export function parseGitCommit({ raw, commit }) {
-	// There is an error here where it is not splitting on the multi-line commits
-	const rawFiles = raw.split(commit.message)[1];
+import { exec } from '../helpers';
+
+export async function parseGitCommit({ hash, repoName }) {
+	const rawFiles = await exec({
+		cmd: `git show ${hash} --numstat --pretty=format:`,
+		dir: `/git/${repoName}`,
+	});
+
+	const resultArray = [];
 
 	if (rawFiles && rawFiles.length > 0) {
 		const fileArray = rawFiles.split('\n');
-
-		return fileArray.reduce((acc, el) => {
+		for (const el of fileArray) {
 			if (el !== '') {
 				const stats = el.split('\t');
 				if (stats.length === 3) {
-					acc.push({
-						additions: stats[0].trim(),
-						deletions: stats[1].trim(),
-						filename: stats[2].trim(),
+					resultArray.push({
+						additions: Number(stats[0]) || 0,
+						deletions: Number(stats[1]) || 0,
+						fileName: stats[2].trim(),
 					});
 				}
 			}
-			return acc;
-		}, []);
+		}
 	}
+	return resultArray;
 }

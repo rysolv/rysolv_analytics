@@ -1,5 +1,5 @@
 import { exec } from './exec';
-import { listFiles } from './listFiles';
 import { execStream } from './execStream';
+import { listFiles } from './listFiles';
 
 export { exec, execStream, listFiles };

@@ -1,5 +1,6 @@
 import { execStream } from '../helpers';
 
+// @TODO I can just replace this with git log --numstat and not need to loop through everything
 export async function parseGitLog(repoName) {
 	// Any random key
 	const hash = '&#^3@9(^123-(*&!';
@@ -8,7 +9,7 @@ export async function parseGitLog(repoName) {
 
 	// Pull formatted git logs
 	const stream = execStream({
-		cmd: `git log -10 --no-merges --pretty=format:"%cN${hash}%ce${hash}%aN${hash}%ae${hash}%H${hash}%aI${hash}%s${hash}%b${hash}%GS${hash}%GK${endHash}"`,
+		cmd: `git log --no-merges --pretty=format:"%cN${hash}%ce${hash}%aN${hash}%ae${hash}%H${hash}%aI${hash}%s${hash}%b${hash}%GS${hash}%GK${endHash}"`,
 		dir: `/git/${repoName}`,
 	});
 
@@ -25,16 +26,16 @@ export async function parseGitLog(repoName) {
 
 				if (values.length === 10) {
 					array.push({
-						committerName: values[0],
-						committerEmail: values[1],
-						authorName: values[2],
 						authorEmail: values[3],
-						commitHash: values[4],
-						date: values[5],
-						subject: values[6],
+						authorName: values[2],
 						body: values[7],
+						commitDate: values[5],
+						commitHash: values[4],
+						committerEmail: values[1],
+						committerName: values[0],
 						signer: values[8],
 						signerKey: values[9],
+						subject: values[6],
 					});
 				}
 			}

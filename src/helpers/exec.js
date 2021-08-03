@@ -11,7 +11,6 @@ export async function exec({ cmd, dir }) {
 		if (stderr) console.log(stderr);
 		return stdout;
 	} catch (error) {
-		// console.log('error here');
 		console.log(Object.keys(error));
 		console.log(error.code);
 		console.log(error.cmd);
