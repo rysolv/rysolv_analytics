@@ -44,8 +44,7 @@ export async function analyzeRepo({ repo }) {
 		})
 	);
 
-	for (const commit of gitHistory) {
-		await uploadRepo({ gitHistory: commit, repo });
-	}
+	await uploadRepo({ gitHistory, repo });
+	console.log(`Uploaded ${repoName}`);
 	return gitHistory;
 }

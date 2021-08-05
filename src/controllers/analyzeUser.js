@@ -1,7 +1,15 @@
-export function analyzeUser({ username }) {
-	// fetch user from github api
-	// get list of non-fork repos
-	// pull down each repo
-	// analyze each repo and push commits to
-	console.log('analyzing ', username);
+import { getUserRepos } from '../integrations';
+import { analyzeRepo } from './analyzeRepo';
+import { pool } from '../db';
+
+export async function analyzeUser({ username }) {
+	console.log(`Analyzing ${username}`);
+	const repos = await getUserRepos({ username });
+
+	console.log(`Reviewing ${repos.length} repos`);
+
+	for (const repo of repos) {
+		await analyzeRepo({ repo });
+	}
+	pool.end();
 }

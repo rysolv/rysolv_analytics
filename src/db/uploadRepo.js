@@ -2,25 +2,32 @@ import { pool } from './connect';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function uploadRepo({ gitHistory, repo }) {
-	const client = await pool.connect();
+	for (const commit of gitHistory) {
+		const client = await pool.connect();
+		await insertCommit({ client, commit, repo });
+		client.release();
+	}
+}
+
+async function insertCommit({ client, commit, repo }) {
 	try {
 		await client.query('BEGIN');
 		const commitId = uuidv4();
 
 		const values = [
 			commitId,
-			gitHistory.authorEmail,
-			gitHistory.authorName,
-			gitHistory.body,
-			gitHistory.commitDate,
-			gitHistory.commitHash,
-			gitHistory.committerEmail,
-			gitHistory.committerName,
+			commit.authorEmail,
+			commit.authorName,
+			commit.body,
+			commit.commitDate,
+			commit.commitHash,
+			commit.committerEmail,
+			commit.committerName,
 			new Date(),
 			repo,
-			gitHistory.signerKey,
-			gitHistory.signer,
-			gitHistory.subject,
+			commit.signerKey,
+			commit.signer,
+			commit.subject,
 		];
 
 		const commitQuery = `
@@ -39,9 +46,11 @@ export async function uploadRepo({ gitHistory, repo }) {
                 signer,
                 subject
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+			ON CONFLICT (commit_hash) DO UPDATE SET id = git_commits.id 
+			RETURNING id;
         `;
 
-		await client.query(commitQuery, values);
+		const { rows } = await client.query(commitQuery, values);
 
 		const fileQuery = `
             INSERT INTO git_files (
@@ -51,13 +60,14 @@ export async function uploadRepo({ gitHistory, repo }) {
                 deletions,
                 file_name
             ) VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT(commit_id, file_name) DO NOTHING
         `;
 
 		await Promise.all(
-			gitHistory.files.map(async (el) => {
+			commit.files.map(async (el) => {
 				const values = [
 					uuidv4(),
-					commitId,
+					rows[0].id,
 					el.additions,
 					el.deletions,
 					el.fileName,
@@ -69,10 +79,8 @@ export async function uploadRepo({ gitHistory, repo }) {
 		await client.query('COMMIT');
 	} catch (error) {
 		await client.query('ROLLBACK');
-		console.log('Upload Error');
-		console.log(gitHistory);
+		console.log('Insert Error');
+		console.log(commit);
 		console.log(error);
-	} finally {
-		return client.release();
 	}
 }

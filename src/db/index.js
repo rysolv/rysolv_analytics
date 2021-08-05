@@ -1,3 +1,4 @@
 import { uploadRepo } from './uploadRepo';
+import { pool } from './connect';
 
-export { uploadRepo };
+export { pool, uploadRepo };

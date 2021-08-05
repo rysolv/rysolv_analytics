@@ -37,8 +37,8 @@ const poolCredentials = switchCredentials();
 
 const pool = new Pool({
 	...poolCredentials,
-	idleTimeoutMillis: 30000,
-	connectionTimeoutMillis: 2000,
+	idleTimeoutMillis: 10000,
+	connectionTimeoutMillis: 1000,
 	max: 20,
 });
 
