@@ -14,11 +14,23 @@ export async function parseGitCommit({ hash, repoName }) {
 			if (el !== '') {
 				const stats = el.split('\t');
 				if (stats.length === 3) {
-					resultArray.push({
-						additions: Number(stats[0]) || 0,
-						deletions: Number(stats[1]) || 0,
-						fileName: stats[2].trim(),
-					});
+					const fileName = stats[2];
+					const rename = fileName.includes('=>');
+
+					// Split on either '.' or '/' and take the last value
+					// Works for: .js, .py, DockerFile, CNAME etc.
+					const fileNameArray = fileName.split(/[\/.]/);
+					const fileExtension =
+						fileNameArray[fileNameArray.length - 1];
+
+					if (!rename) {
+						resultArray.push({
+							additions: Number(stats[0]) || 0,
+							deletions: Number(stats[1]) || 0,
+							fileExtension,
+							fileName,
+						});
+					}
 				}
 			}
 		}
