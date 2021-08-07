@@ -1,4 +1,4 @@
-import { exec } from '../helpers';
+import { exec } from '../helpers/index.js';
 
 export async function parseGitCommit({ hash, repoName }) {
 	const rawFiles = await exec({

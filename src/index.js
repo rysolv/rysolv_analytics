@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 
-import { analyzeUser, analyzeRepo, clean } from './controllers';
+import { analyzeUser, analyzeRepo, clean } from './controllers/index.js';
 
 async function promptInitialAction() {
 	const { action } = await inquirer.prompt({

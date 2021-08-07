@@ -1,4 +1,4 @@
-import { execStream } from '../helpers';
+import { execStream } from '../helpers/index.js';
 
 // @TODO I can just replace this with git log --numstat and not need to loop through everything
 export async function parseGitLog(repoName) {

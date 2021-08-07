@@ -1,6 +1,8 @@
 /* eslint-disable consistent-return, no-console */
-const { Pool } = require('pg');
-require('dotenv').config();
+import pg from 'pg';
+import {} from 'dotenv/config';
+
+const { Pool } = pg;
 
 const switchCredentials = () => {
 	switch ('local') {

@@ -1,5 +1,5 @@
-import { fetchRepo } from './fetchRepo';
-import { parseGitLog } from './parseGitLog';
-import { parseGitCommit } from './parseGitCommit';
+import { fetchRepo } from './fetchRepo.js';
+import { parseGitLog } from './parseGitLog.js';
+import { parseGitCommit } from './parseGitCommit.js';
 
 export { fetchRepo, parseGitLog, parseGitCommit };

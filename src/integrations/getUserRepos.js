@@ -1,6 +1,6 @@
 /* eslint-disable no-console, no-unused-vars */
-const { Octokit } = require('@octokit/rest');
-const { createTokenAuth } = require('@octokit/auth-token');
+import { Octokit } from '@octokit/rest';
+import { createTokenAuth } from '@octokit/auth-token';
 
 export async function getUserRepos({ username }) {
 	// Connect to Octokit API

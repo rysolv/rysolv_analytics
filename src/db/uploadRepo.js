@@ -1,5 +1,5 @@
-import { pool } from './connect';
 import { v4 as uuidv4 } from 'uuid';
+import { pool } from './connect.js';
 
 export async function uploadRepo({ gitHistory, repo }) {
 	for (const commit of gitHistory) {

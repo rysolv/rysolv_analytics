@@ -1,4 +1,4 @@
-import { uploadRepo } from './uploadRepo';
-import { pool } from './connect';
+import { uploadRepo } from './uploadRepo.js';
+import { pool } from './connect.js';
 
 export { pool, uploadRepo };

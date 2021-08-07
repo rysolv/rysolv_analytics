@@ -1,15 +1,15 @@
-import { getUserRepos } from '../integrations';
-import { analyzeRepo } from './analyzeRepo';
-import { pool } from '../db';
+import { getUserRepos } from '../integrations/index.js';
+import { analyzeRepo } from './analyzeRepo.js';
+import { pool } from '../db/index.js';
 
-export async function analyzeUser({ username }) {
+export async function analyzeUser({ username, cleanup, userId }) {
 	console.log(`Analyzing ${username}`);
 	const repos = await getUserRepos({ username });
 
 	console.log(`Reviewing ${repos.length} repos`);
 
 	for (const repo of repos) {
-		await analyzeRepo({ repo });
+		await analyzeRepo({ repo, cleanup });
 	}
 	pool.end();
 }

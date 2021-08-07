@@ -1,4 +1,4 @@
-import { exec, listFiles } from '../helpers';
+import { exec, listFiles } from '../helpers/index.js';
 
 export async function fetchRepo({ repo }) {
 	const repoName = repo.split('/')[1];

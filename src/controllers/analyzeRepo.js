@@ -1,5 +1,5 @@
-import { fetchRepo, parseGitLog, parseGitCommit } from '../parsers';
-import { uploadRepo } from '../db';
+import { fetchRepo, parseGitLog, parseGitCommit } from '../parsers/index.js';
+import { uploadRepo } from '../db/index.js';
 
 /**
  * Takes @repo (ex: rysolv/rysolv, tylermaran/izac) and returns:
