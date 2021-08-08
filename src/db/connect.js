@@ -44,6 +44,19 @@ const pool = new Pool({
 	max: 20,
 });
 
+// Single Query. Accepts array of values for parameterized queries
+const singleQuery = async ({ queryText, values }) => {
+	const client = await pool.connect();
+	try {
+		const result = await client.query(queryText, values);
+		client.release();
+		return result;
+	} catch (error) {
+		client.release();
+		throw error;
+	}
+};
+
 console.log('Connected to DB:', pool.options.database);
 
 pool.on('connect', () => {
@@ -59,4 +72,4 @@ pool.on('remove', () => {
 	console.log('Client connection ended');
 });
 
-export { pool };
+export { pool, singleQuery };

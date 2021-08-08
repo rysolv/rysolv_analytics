@@ -1,4 +1,9 @@
-import { fetchRepo, parseGitLog, parseGitCommit } from '../parsers/index.js';
+import {
+	deleteRepo,
+	fetchRepo,
+	parseGitCommit,
+	parseGitLog,
+} from '../parsers/index.js';
 import { uploadRepo } from '../db/index.js';
 
 /**
@@ -24,15 +29,19 @@ import { uploadRepo } from '../db/index.js';
 	},]
 */
 
-export async function analyzeRepo({ repo }) {
+export async function analyzeRepo({ cleanup, repo, user }) {
 	const repoName = repo.split('/')[1];
 
 	// Clone repo || pull down changes
 	await fetchRepo({ repo });
 
 	// Fetch Git Log from repo and parse into array
-	const commitArray = await parseGitLog(repoName);
-	console.log(`Reviewing ${commitArray.length} commits in ${repo}`);
+	const commitArray = await parseGitLog({
+		repoName,
+		userId: user.userId,
+		emails: user.emails,
+	});
+	console.log(`\nReviewing ${commitArray.length} commits in ${repo}`);
 
 	// Fetch file change data from each commit
 	const gitHistory = await Promise.all(
@@ -46,5 +55,7 @@ export async function analyzeRepo({ repo }) {
 
 	await uploadRepo({ gitHistory, repo });
 	console.log(`Uploaded ${repoName}`);
+
+	if (cleanup) deleteRepo({ repoName });
 	return gitHistory;
 }

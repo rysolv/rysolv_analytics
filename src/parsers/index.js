@@ -1,5 +1,6 @@
+import { deleteRepo } from './deleteRepo.js';
 import { fetchRepo } from './fetchRepo.js';
-import { parseGitLog } from './parseGitLog.js';
 import { parseGitCommit } from './parseGitCommit.js';
+import { parseGitLog } from './parseGitLog.js';
 
-export { fetchRepo, parseGitLog, parseGitCommit };
+export { deleteRepo, fetchRepo, parseGitLog, parseGitCommit };

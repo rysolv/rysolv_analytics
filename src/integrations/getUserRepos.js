@@ -1,4 +1,3 @@
-/* eslint-disable no-console, no-unused-vars */
 import { Octokit } from '@octokit/rest';
 import { createTokenAuth } from '@octokit/auth-token';
 

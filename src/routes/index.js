@@ -1,12 +1,12 @@
 import express from 'express';
-import { analyzeUser } from '../controllers';
+import { analyzeUser } from '../controllers/index.js';
 
 const router = express.Router();
 router.post('/analyze', (req, res, next) => {
-	console.log(req.body);
-	// analyzeUser({ userId: '12345', cleanup: true });
+	const { userId } = req.body;
+	analyzeUser({ userId, cleanup: true });
 
-	return res.send(200);
+	return res.sendStatus(200);
 });
 
 export default router;

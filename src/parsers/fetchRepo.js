@@ -6,7 +6,7 @@ export async function fetchRepo({ repo }) {
 	if (!listFiles({ dir: '/git' }).includes(repoName)) {
 		console.log(`Fetching ${repo}...`);
 		await exec({
-			cmd: `git clone https://github.com/${repo}.git`,
+			cmd: `git clone --bare https://github.com/${repo}.git`,
 			dir: '/git',
 		});
 	} else {

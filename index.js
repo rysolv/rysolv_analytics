@@ -1,14 +1,15 @@
-import express from 'express';
 import {} from 'dotenv/config';
+import express from 'express';
+
+import routes from './src/routes/index.js';
 
 const app = express();
+app.use(express.json());
 const port = process.env.PORT || 4000;
-
-import userRoutes from './src/routes/index.js';
 
 // Routes
 app.get('/', (req, res) => res.status(200).send('pong'));
-app.use('/user', userRoutes);
+app.use('/user', routes);
 
 // Not found
 app.use((req, res, next) => {

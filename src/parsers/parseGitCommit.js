@@ -3,7 +3,7 @@ import { exec } from '../helpers/index.js';
 export async function parseGitCommit({ hash, repoName }) {
 	const rawFiles = await exec({
 		cmd: `git show ${hash} --numstat --pretty=format:`,
-		dir: `/git/${repoName}`,
+		dir: `/git/${repoName}.git`,
 	});
 
 	const resultArray = [];

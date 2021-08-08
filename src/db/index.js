@@ -1,4 +1,5 @@
-import { uploadRepo } from './uploadRepo.js';
+import { getUserById } from './getUserById.js';
 import { pool } from './connect.js';
+import { uploadRepo } from './uploadRepo.js';
 
-export { pool, uploadRepo };
+export { getUserById, pool, uploadRepo };

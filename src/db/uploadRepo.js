@@ -28,6 +28,7 @@ async function insertCommit({ client, commit, repo }) {
 			commit.signerKey,
 			commit.signer,
 			commit.subject,
+			commit.userId,
 		];
 
 		const commitQuery = `
@@ -44,8 +45,9 @@ async function insertCommit({ client, commit, repo }) {
                 repo_path,
                 signer_key,
                 signer,
-                subject
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                subject,	
+				user_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 			ON CONFLICT (commit_hash) DO UPDATE SET id = git_commits.id 
 			RETURNING id;
         `;

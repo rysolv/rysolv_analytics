@@ -22,7 +22,7 @@
 	},
 	"devDependencies": {},
 	"scripts": {
-		"start": "node --experimental-specifier-resolution=node index.js",
+		"start": "node index.js",
 		"test": "test"
 	},
 	"type": "module",
