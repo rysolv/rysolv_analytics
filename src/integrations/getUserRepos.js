@@ -10,28 +10,36 @@ export async function getUserRepos({ username }) {
 	});
 
 	// Fetch user repos
+	// 100 most recently updated
 	const { data } = await GITHUB.repos.listForUser({
-		username,
 		per_page: 100,
+		sort: 'updated',
 		type: 'all',
+		username,
 	});
 
-	// Fetch user repos
+	const repos = [];
+	// @TODO upload repos to git_repos
+	for (const repo of data) {
+		repos.push(repo.full_name);
+	}
+
+	// Fetch user Organizations
 	const { data: orgData } = await GITHUB.orgs.listForUser({
 		username,
 		type: 'all',
 	});
 
-	console.log(orgData);
-	const repos = [];
-	for (const repo of data) {
-		console.log(repo.full_name);
-		if (!repo.fork) {
+	for (const org of orgData) {
+		// @TODO: upload org to git_orgs
+		const { data: repoData } = await GITHUB.repos.listForOrg({
+			org: org.login,
+		});
+
+		for (const repo of repoData) {
 			repos.push(repo.full_name);
 		}
 	}
-
-	// console.log(repos);
 
 	return repos;
 }

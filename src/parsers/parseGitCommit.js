@@ -1,4 +1,4 @@
-import { exec } from '../helpers/index.js';
+import { exec, languageList } from '../helpers/index.js';
 
 export async function parseGitCommit({ hash, repoName }) {
 	const rawFiles = await exec({
@@ -29,6 +29,7 @@ export async function parseGitCommit({ hash, repoName }) {
 							deletions: Number(stats[1]) || 0,
 							fileExtension,
 							fileName,
+							language: languageList[fileExtension] || null,
 						});
 					}
 				}

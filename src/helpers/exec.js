@@ -8,11 +8,11 @@ const exec_promise = util.promisify(execute);
 export async function exec({ cmd, dir }) {
 	try {
 		const { stderr, stdout } = await exec_promise(cmd, { cwd: root + dir });
-		if (stderr) console.log(stderr);
+		if (stderr) console.log(stderr.trim());
 		return stdout;
 	} catch (error) {
 		console.log(Object.keys(error));
-		console.log(error.code);
-		console.log(error.cmd);
+		console.log('Error code: ', error.code);
+		console.log('Error on: ', error.cmd);
 	}
 }

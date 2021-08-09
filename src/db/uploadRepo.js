@@ -61,8 +61,9 @@ async function insertCommit({ client, commit, repo }) {
                 additions,
                 deletions,
 				file_extension,
-                file_name
-            ) VALUES ($1, $2, $3, $4, $5, $6)
+                file_name,
+				language
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
 			ON CONFLICT(commit_id, file_name) DO NOTHING
         `;
 
@@ -75,6 +76,7 @@ async function insertCommit({ client, commit, repo }) {
 					el.deletions,
 					el.fileExtension,
 					el.fileName,
+					el.language,
 				];
 				await client.query(fileQuery, values);
 			})

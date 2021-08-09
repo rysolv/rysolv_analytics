@@ -3,7 +3,7 @@ import { singleQuery } from './connect.js';
 export async function getUserById({ userId }) {
 	const queryText = `
         SELECT 
-            u.github_username AS "githubUsername",
+            u.github_username,
             array_agg(ue.email) AS "userEmails"
         FROM users u
         JOIN user_emails ue ON u.id = ue.user_id
@@ -12,6 +12,7 @@ export async function getUserById({ userId }) {
     `;
 
 	const { rows } = await singleQuery({ queryText, values: [userId] });
+	console.log(rows);
 	const [user] = rows;
 	return user;
 }
