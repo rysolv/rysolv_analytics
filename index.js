@@ -5,7 +5,7 @@ import routes from './src/routes/index.js';
 
 const app = express();
 app.use(express.json());
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 // Routes
 app.get('/', (req, res) => res.status(200).send('pong'));

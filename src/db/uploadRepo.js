@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { pool } from './connect.js';
 
-export async function uploadRepo({ gitHistory, repo }) {
+export async function uploadRepo({ gitHistory, repoId }) {
 	for (const commit of gitHistory) {
 		const client = await pool.connect();
-		await insertCommit({ client, commit, repo });
+		await insertCommit({ client, commit, repoId });
 		client.release();
 	}
 }
 
-async function insertCommit({ client, commit, repo }) {
+async function insertCommit({ client, commit, repoId }) {
 	try {
 		await client.query('BEGIN');
 		const commitId = uuidv4();
@@ -24,7 +24,7 @@ async function insertCommit({ client, commit, repo }) {
 			commit.committerEmail,
 			commit.committerName,
 			new Date(),
-			repo,
+			repoId,
 			commit.signerKey,
 			commit.signer,
 			commit.subject,
@@ -42,7 +42,7 @@ async function insertCommit({ client, commit, repo }) {
                 committer_email,
                 committer_name,
                 created_date,
-                repo_path,
+                repo_id,
                 signer_key,
                 signer,
                 subject,	

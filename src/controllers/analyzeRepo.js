@@ -29,7 +29,7 @@ import { uploadRepo } from '../db/index.js';
 	},]
 */
 
-export async function analyzeRepo({ cleanup, repo, user }) {
+export async function analyzeRepo({ cleanup, repo, repoId, user }) {
 	const repoName = repo.split('/')[1];
 
 	// Clone repo || pull down changes
@@ -53,7 +53,8 @@ export async function analyzeRepo({ cleanup, repo, user }) {
 		})
 	);
 
-	await uploadRepo({ gitHistory, repo });
+	// Save commit & updated files into db
+	await uploadRepo({ gitHistory, repoId });
 	console.log(`Uploaded ${repoName}`);
 
 	if (cleanup) deleteRepo({ repoName });

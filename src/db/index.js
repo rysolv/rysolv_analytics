@@ -1,6 +1,7 @@
 import { getUserById } from './getUserById.js';
+import { insertRepo } from './insertRepo.js';
 import { pool } from './connect.js';
-import { uploadRepo } from './uploadRepo.js';
 import { updateUserLanguageCount } from './updateLanguageCount.js';
+import { uploadRepo } from './uploadRepo.js';
 
-export { getUserById, pool, uploadRepo, updateUserLanguageCount };
+export { getUserById, insertRepo, pool, uploadRepo, updateUserLanguageCount };

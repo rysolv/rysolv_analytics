@@ -1,6 +1,10 @@
 import { getUserRepos } from '../integrations/index.js';
 import { analyzeRepo } from './analyzeRepo.js';
-import { pool, getUserById, updateUserLanguageCount } from '../db/index.js';
+import {
+	getUserById,
+	insertRepo,
+	updateUserLanguageCount,
+} from '../db/index.js';
 
 export async function analyzeUser({ cleanup, username, userId }) {
 	const t1 = Date.now();
@@ -17,18 +21,17 @@ export async function analyzeUser({ cleanup, username, userId }) {
 
 	// Pull User repos (includes forks and orgs)
 	const repos = await getUserRepos({ username: user.username });
-	console.log(`Analyzing ${user.username}`);
-	console.log(`Reviewing ${repos.length} repos`);
+	console.log(`Analyzing ${user.username} \nReviewing ${repos.length} repos`);
 
 	// Parse each repo and save to db
-	for (const repo of repos) {
-		await analyzeRepo({ repo, cleanup, user });
+	for (const { full_name, id, html_url } of repos) {
+		const { id: repoId } = await insertRepo({ full_name, id, html_url });
+		await analyzeRepo({ cleanup, repo: full_name, repoId, user });
 	}
 
 	// Parse user commits and summarize languages
 	await updateUserLanguageCount({ userId });
 
-	pool.end();
 	const t2 = Date.now();
 	console.log(`Finished in  ${t2 - t1}ms`);
 }

@@ -18,12 +18,6 @@ export async function getUserRepos({ username }) {
 		username,
 	});
 
-	const repos = [];
-	// @TODO upload repos to git_repos
-	for (const repo of data) {
-		repos.push(repo.full_name);
-	}
-
 	// Fetch user Organizations
 	const { data: orgData } = await GITHUB.orgs.listForUser({
 		username,
@@ -31,15 +25,13 @@ export async function getUserRepos({ username }) {
 	});
 
 	for (const org of orgData) {
-		// @TODO: upload org to git_orgs
 		const { data: repoData } = await GITHUB.repos.listForOrg({
 			org: org.login,
 		});
-
 		for (const repo of repoData) {
-			repos.push(repo.full_name);
+			data.push(repo);
 		}
 	}
 
-	return repos;
+	return data;
 }
