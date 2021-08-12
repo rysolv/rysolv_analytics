@@ -5,7 +5,7 @@ import {} from 'dotenv/config';
 const { Pool } = pg;
 
 const switchCredentials = () => {
-	switch ('local') {
+	switch (process.env.NODE_ENV) {
 		case 'development':
 			return {
 				database: process.env.DB_NAME_DEV,
