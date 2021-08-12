@@ -36,6 +36,8 @@ const switchCredentials = () => {
 };
 
 const poolCredentials = switchCredentials();
+console.log('** POOL CREDENTIALS **');
+console.log(poolCredentials);
 
 const pool = new Pool({
 	...poolCredentials,
