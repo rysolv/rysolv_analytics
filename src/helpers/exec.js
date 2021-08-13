@@ -10,9 +10,8 @@ export async function exec({ cmd, dir }) {
 		const { stderr, stdout } = await exec_promise(cmd, { cwd: root + dir });
 		if (stderr) console.log(stderr.trim());
 		return stdout;
-	} catch (error) {
-		console.log(Object.keys(error));
-		console.log('Error code: ', error.code);
-		console.log('Error on: ', error.cmd);
+	} catch ({ code, cmd }) {
+		console.log('Error code: ', code);
+		console.log('Error on: ', cmd);
 	}
 }

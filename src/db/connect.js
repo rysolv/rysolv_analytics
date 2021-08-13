@@ -3,17 +3,9 @@ import pg from 'pg';
 import {} from 'dotenv/config';
 
 const { Pool } = pg;
-
 const switchCredentials = () => {
 	switch (process.env.NODE_ENV) {
-		case 'development':
-			return {
-				database: process.env.DB_NAME_DEV,
-				host: process.env.DB_HOST_DEV,
-				password: process.env.DB_PASSWORD_DEV,
-				port: process.env.DB_PORT_DEV,
-				user: process.env.DB_USER_DEV,
-			};
+		case undefined:
 		case 'local':
 			return {
 				database: process.env.DB_NAME_LOCAL,
@@ -21,6 +13,14 @@ const switchCredentials = () => {
 				password: process.env.DB_PASSWORD_LOCAL,
 				port: process.env.DB_PORT_LOCAL,
 				user: process.env.DB_USER_LOCAL,
+			};
+		case 'development':
+			return {
+				database: process.env.DB_NAME_DEV,
+				host: process.env.DB_HOST_DEV,
+				password: process.env.DB_PASSWORD_DEV,
+				port: process.env.DB_PORT_DEV,
+				user: process.env.DB_USER_DEV,
 			};
 		case 'production':
 			return {
@@ -36,8 +36,6 @@ const switchCredentials = () => {
 };
 
 const poolCredentials = switchCredentials();
-console.log('** POOL CREDENTIALS **');
-console.log(poolCredentials);
 
 const pool = new Pool({
 	...poolCredentials,

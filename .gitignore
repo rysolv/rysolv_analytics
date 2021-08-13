@@ -1,5 +1,8 @@
 /node_modules
 .env
+git/*
+!git/.gitkeep 
+
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

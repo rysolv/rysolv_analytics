@@ -2,6 +2,7 @@ import { getUserRepos } from '../integrations/index.js';
 import { analyzeRepo } from './analyzeRepo.js';
 import {
 	getUserById,
+	insertAnalyticsHistory,
 	insertRepo,
 	updateUserLanguageCount,
 } from '../db/index.js';
@@ -23,15 +24,50 @@ export async function analyzeUser({ cleanup, username, userId }) {
 	const repos = await getUserRepos({ username: user.username });
 	console.log(`Analyzing ${user.username} \nReviewing ${repos.length} repos`);
 
+	const history = {
+		commits: 0,
+		errors: [],
+		files: 0,
+		repos: repos.length,
+		userId,
+	};
+
 	// Parse each repo and save to db
 	for (const { full_name, id, html_url } of repos) {
-		const { id: repoId } = await insertRepo({ full_name, id, html_url });
-		await analyzeRepo({ cleanup, repo: full_name, repoId, user });
+		try {
+			// Add repos to git_repos
+			const { id: repoId } = await insertRepo({
+				full_name,
+				id,
+				html_url,
+			});
+
+			// Parse git commits for repo
+			const commits = await analyzeRepo({
+				cleanup,
+				history,
+				repo: full_name,
+				repoId,
+				user,
+			});
+
+			// Log number of commit/file additions
+			history.commits += commits.length;
+			commits.map((commit) => {
+				history.files += commit.files.length;
+			});
+		} catch (error) {
+			history.errors.push(error);
+		}
 	}
 
 	// Parse user commits and summarize languages
 	await updateUserLanguageCount({ userId });
 
 	const t2 = Date.now();
-	console.log(`Finished in  ${t2 - t1}ms`);
+
+	// Log results to analytics history table
+	history.time = t2 - t1;
+	await insertAnalyticsHistory(history);
+	console.log(history);
 }
