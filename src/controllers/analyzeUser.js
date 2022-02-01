@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import { getUserRepos } from '../integrations/index.js';
 import { analyzeRepo } from './analyzeRepo.js';
 import {
@@ -6,6 +7,9 @@ import {
 	insertRepo,
 	updateUserLanguageCount,
 } from '../db/index.js';
+
+const production = process.env.NODE_ENV === 'production';
+const api = production ? process.env.API : process.env.API_LOCAL;
 
 export async function analyzeUser({ cleanup, username, userId }) {
 	const t1 = Date.now();
@@ -57,6 +61,7 @@ export async function analyzeUser({ cleanup, username, userId }) {
 				history.files += commit.files.length;
 			});
 		} catch (error) {
+			console.log(error);
 			history.errors.push(error);
 		}
 	}
@@ -70,4 +75,33 @@ export async function analyzeUser({ cleanup, username, userId }) {
 	history.time = t2 - t1;
 	await insertAnalyticsHistory(history);
 	console.log(history);
+
+	if (userId) {
+		console.log('Making api request');
+
+		// Call API to update user profile
+		const query = `
+			mutation {
+				updateUserProfile(userId: "${userId}") {
+					__typename
+					... on Success {
+						message
+					}
+					... on Error {
+						message
+					}
+				}
+			}
+		`;
+
+		const requestOptions = {
+			body: JSON.stringify({ query }),
+			headers: { 'Content-Type': 'application/json' },
+			method: 'POST',
+		};
+		const url = api;
+		fetch(url, requestOptions);
+	}
+
+	console.log('Done');
 }
